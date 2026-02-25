@@ -64,6 +64,7 @@ jobs:
         run: vendor/bin/phpunit --testsuite=Integration
 
       - name: Upload logs artifact
+        if: ${{ failure() }}
         uses: actions/upload-artifact@v6
         with:
           name: ci-${{ matrix.tests.type }}-${{ github.run_id }}
