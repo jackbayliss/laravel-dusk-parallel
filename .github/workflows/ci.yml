@@ -62,3 +62,17 @@ jobs:
 
       - name: Run integration tests
         run: vendor/bin/phpunit --testsuite=Integration
+
+      - name: Upload logs artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: ci-${{ matrix.tests.type }}-${{ github.run_id }}
+          path: |
+            /var/log/supervisor
+            /var/log/apache2
+            /var/log/php_errors.log
+            storage/logs
+            tests/Browser/console
+            tests/Browser/screenshots
+            tests/Browser/source
+          retention-days: 14
