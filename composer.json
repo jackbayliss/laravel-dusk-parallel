@@ -1,0 +1,54 @@
+{
+    "name": "jackbayliss/laravel-dusk-parallel",
+    "description": "Parallel test execution for Laravel Dusk.",
+    "keywords": [
+        "laravel",
+        "dusk",
+        "testing",
+        "parallel"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jack Bayliss",
+            "email": "jjbdev@proton.me"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "laravel/dusk": "^8.0|^9.0"
+    },
+    "require-dev": {
+        "brianium/paratest": "^7.0|^8.0",
+        "orchestra/testbench": "^8.0|^9.0|^10.0",
+        "phpunit/phpunit": "^10.5|^11.0"
+    },
+    "suggest": {
+        "brianium/paratest": "Required for PHPUnit parallel execution. Not needed when using Pest --parallel."
+    },
+    "autoload": {
+        "psr-4": {
+            "JackBayliss\\DuskParallel\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JackBayliss\\DuskParallel\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "JackBayliss\\DuskParallel\\DuskParallelServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
