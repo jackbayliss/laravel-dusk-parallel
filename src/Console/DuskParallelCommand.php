@@ -9,9 +9,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 class DuskParallelCommand extends DuskCommand
 {
     protected $signature = 'dusk:parallel
-                {--processes=2 : Number of parallel processes to use}
-                {--browse : Open a browser instead of using headless mode}
-                {--without-tty : Disable output to TTY}';
+                {--processes=2 : Number of parallel processes to use}';
 
     protected $description = 'Run the Dusk tests in parallel';
 
