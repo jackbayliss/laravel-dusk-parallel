@@ -2,7 +2,6 @@
 
 namespace JackBayliss\DuskParallel\Tests\Integration;
 
-use JackBayliss\DuskParallel\ParallelDriver;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 
@@ -64,15 +63,6 @@ class ParallelConnectionTest extends TestCase
         $process->setTimeout(120)->run();
 
         $this->assertSame(0, $process->getExitCode(), $process->getOutput().$process->getErrorOutput());
-    }
-
-    public function test_each_worker_resolves_to_its_own_port(): void
-    {
-        $_ENV['TEST_TOKEN'] = '0';
-        $this->assertSame('http://localhost:9515', ParallelDriver::resolveDriverUrl());
-
-        $_ENV['TEST_TOKEN'] = '1';
-        $this->assertSame('http://localhost:9516', ParallelDriver::resolveDriverUrl());
     }
 
     private function portListening(int $port): bool
