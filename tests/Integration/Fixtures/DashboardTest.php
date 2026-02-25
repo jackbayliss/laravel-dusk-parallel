@@ -10,8 +10,8 @@ class DashboardTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/dashboard.html')
-                    ->assertTitle('Dashboard - Test App')
-                    ->assertSee('You are logged in.');
+                ->assertTitle('Dashboard - Test App')
+                ->assertSee('You are logged in.');
         });
     }
 
@@ -19,7 +19,7 @@ class DashboardTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/dashboard.html')
-                    ->assertSeeLink('Home');
+                ->assertSeeLink('Home');
         });
     }
 }

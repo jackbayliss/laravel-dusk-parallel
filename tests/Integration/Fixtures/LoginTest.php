@@ -10,8 +10,8 @@ class LoginTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/login.html')
-                    ->assertTitle('Sign in - Test App')
-                    ->assertSee('Sign in');
+                ->assertTitle('Sign in - Test App')
+                ->assertSee('Sign in');
         });
     }
 
@@ -19,10 +19,10 @@ class LoginTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/login.html')
-                    ->type('email', 'taylor@laravel.com')
-                    ->type('password', 'secret')
-                    ->assertInputValue('email', 'taylor@laravel.com')
-                    ->assertPresent('button[type="submit"]');
+                ->type('email', 'taylor@laravel.com')
+                ->type('password', 'secret')
+                ->assertInputValue('email', 'taylor@laravel.com')
+                ->assertPresent('button[type="submit"]');
         });
     }
 }

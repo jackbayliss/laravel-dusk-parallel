@@ -10,10 +10,10 @@ class NavigationTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
-                    ->assertSeeLink('Sign in')
-                    ->clickLink('Sign in')
-                    ->assertSee('Sign in')
-                    ->assertPresent('#email');
+                ->assertSeeLink('Sign in')
+                ->clickLink('Sign in')
+                ->assertSee('Sign in')
+                ->assertPresent('#email');
         });
     }
 
@@ -21,8 +21,8 @@ class NavigationTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/dashboard.html')
-                    ->clickLink('Home')
-                    ->assertSee('Welcome to Test App');
+                ->clickLink('Home')
+                ->assertSee('Welcome to Test App');
         });
     }
 }
