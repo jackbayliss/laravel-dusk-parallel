@@ -4,16 +4,20 @@ namespace JackBayliss\DuskParallel\Console;
 
 use Laravel\Dusk\Console\DuskCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Input\InputOption;
 
 #[AsCommand(name: 'dusk:parallel')]
 class DuskParallelCommand extends DuskCommand
 {
-    protected $signature = 'dusk:parallel
-                {--processes=2 : Number of parallel processes to use}
-                {--browse : Open a browser instead of using headless mode}
-                {--without-tty : Disable output to TTY}';
-
     protected $description = 'Run the Dusk tests in parallel';
+
+    protected function configure(): void
+    {
+        parent::configure();
+
+        $this->setName('dusk:parallel');
+        $this->addOption('processes', null, InputOption::VALUE_REQUIRED, 'Number of parallel processes to use', 2);
+    }
 
     protected function binary()
     {
