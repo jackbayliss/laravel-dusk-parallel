@@ -15,7 +15,7 @@ class SwitchDatabaseForParallelTesting
             $base = preg_replace('/_test_\d+$/', '', config('database.connections.' . config('database.default') . '.database'));
             $testDatabase = "{$base}_test_{$token}";
 
-            foreach (array_unique([config('database.default'), 'mysql-elevated', 'mysql-replica']) as $connection) {
+            foreach (array_keys(config('database.connections')) as $connection) {
                 Config::set("database.connections.{$connection}.database", $testDatabase);
                 DB::purge($connection);
             }
