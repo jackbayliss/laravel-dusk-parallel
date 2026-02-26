@@ -6,12 +6,12 @@ class ParallelDriver
 {
     public static function runningInParallel(): bool
     {
-        return isset($_ENV['TEST_TOKEN']);
+        return isset($_SERVER['TEST_TOKEN']) || isset($_ENV['TEST_TOKEN']);
     }
 
     public static function parallelDriverPort(): int
     {
-        return 9515 + (int) $_ENV['TEST_TOKEN'];
+        return 9515 + (int) ($_SERVER['TEST_TOKEN'] ?? $_ENV['TEST_TOKEN']);
     }
 
     public static function hasExplicitPort(array $arguments): bool
