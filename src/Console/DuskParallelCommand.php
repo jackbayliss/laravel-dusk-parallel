@@ -34,12 +34,13 @@ class DuskParallelCommand extends DuskCommand
 
     protected function phpunitArguments($options)
     {
-        $options = array_values(array_filter($options, function ($option) {
-            return ! str_starts_with($option, '--processes=')
-                && ! str_starts_with($option, '--runner=');
-        }));
-
         $args = parent::phpunitArguments($options);
+
+        $args = array_values(array_filter($args, function ($arg) {
+            return ! str_starts_with($arg, '--no-output')
+                && ! str_starts_with($arg, '--processes=')
+                && ! str_starts_with($arg, '--runner=');
+        }));
 
         $args[] = '--processes';
         $args[] = $this->option('processes');
