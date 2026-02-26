@@ -80,24 +80,4 @@ abstract class TestCase extends DuskTestCase
             )
         );
     }
-
-    /**
-     * Capture failure screenshots for each browser.
-     *
-     * Overrides the default to dismiss any open JS dialog before attempting a screenshot.
-     * Without this, an open alert causes UnexpectedAlertOpenException which overwrites the
-     * real assertion failure, making the test appear to fail for a different reason.
-     */
-    protected function captureFailuresFor($browsers): void
-    {
-        $browsers->each(function ($browser) {
-            try {
-                $browser->driver->switchTo()->alert()->dismiss();
-            } catch (NoAlertOpenException $e) {
-                // No dialog open — nothing to dismiss.
-            }
-        });
-
-        parent::captureFailuresFor($browsers);
-    }
 }
