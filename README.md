@@ -27,8 +27,15 @@ composer require --dev jackbayliss/laravel-dusk-parallel
 ```bash
 composer require --dev brianium/paratest
 ```
+### 2. Add the middelware into your app
+```php
+    if (($_SERVER['APP_ENV'] ?? $_ENV['APP_ENV'] ?? null) === 'testing') {
+        $middleware->web(prepend: SwitchDatabaseForParallelTesting::class);
+    }
+```
 
-### 2. Start ChromeDriver instances
+
+### 3. Start ChromeDriver instances
 
 You need one ChromeDriver instance per parallel process. By default, the package uses ports starting from `9515`. I recommend starting a few more instances than you think you need, as ParaTest's token assignment can be unpredictable depending on your environment:
 ```bash
@@ -38,7 +45,7 @@ chromedriver --port=9517 &
 chromedriver --port=9518 &
 ```
 
-### 3. Run your tests
+### 4. Run your tests
 ```bash
 php artisan dusk:parallel
 ```
