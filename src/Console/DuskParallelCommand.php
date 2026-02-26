@@ -17,6 +17,9 @@ class DuskParallelCommand extends DuskCommand
 
         $this->setName('dusk:parallel');
         $this->addOption('processes', null, InputOption::VALUE_REQUIRED, 'Number of parallel processes to use', 2);
+        $this->addOption('stop-on-failure', null, InputOption::VALUE_NONE, 'Stop execution upon first test failure');
+        $this->addOption('stop-on-error', null, InputOption::VALUE_NONE, 'Stop execution upon first test error');
+        $this->addOption('functional', 'f', InputOption::VALUE_NONE, 'Run each test method in a separate process (required for --stop-on-failure to work per-method)');
     }
 
     protected function binary()
@@ -39,7 +42,11 @@ class DuskParallelCommand extends DuskCommand
         $args = array_values(array_filter($args, function ($arg) {
             return ! str_starts_with($arg, '--no-output')
                 && ! str_starts_with($arg, '--processes=')
-                && ! str_starts_with($arg, '--runner=');
+                && ! str_starts_with($arg, '--runner=')
+                && $arg !== '--stop-on-failure'
+                && $arg !== '--stop-on-error'
+                && $arg !== '--functional'
+                && $arg !== '-f';
         }));
 
         $args[] = '--processes';
@@ -47,6 +54,18 @@ class DuskParallelCommand extends DuskCommand
 
         $args[] = '--runner';
         $args[] = 'WrapperRunner';
+
+        if ($this->option('stop-on-failure')) {
+            $args[] = '--stop-on-failure';
+        }
+
+        if ($this->option('stop-on-error')) {
+            $args[] = '--stop-on-error';
+        }
+
+        if ($this->option('functional')) {
+            $args[] = '--functional';
+        }
 
         return $args;
     }
