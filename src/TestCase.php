@@ -3,8 +3,10 @@
 namespace JackBayliss\DuskParallel;
 
 use Facebook\WebDriver\Chrome\ChromeOptions;
+use Facebook\WebDriver\Exception\NoAlertOpenException;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Support\Facades\ParallelTesting;
 use Laravel\Dusk\Browser as DuskBrowser;
 use Laravel\Dusk\TestCase as DuskTestCase;
@@ -17,8 +19,16 @@ abstract class TestCase extends DuskTestCase
      */
     protected static bool $parallelProcessSetUp = false;
 
+    /**
+     * When DUSK_DRIVER_URL is set we're using an external Selenium/WebDriver service,
+     * so there's no need to launch a local ChromeDriver process.
+     */
     public static function startChromeDriver(array $arguments = []): void
     {
+        if (ParallelDriver::hasExplicitDriverUrl()) {
+            return;
+        }
+
         parent::startChromeDriver(ParallelDriver::resolveDriverArguments($arguments));
     }
 
@@ -69,5 +79,25 @@ abstract class TestCase extends DuskTestCase
                 $options
             )
         );
+    }
+
+    /**
+     * Capture failure screenshots for each browser.
+     *
+     * Overrides the default to dismiss any open JS dialog before attempting a screenshot.
+     * Without this, an open alert causes UnexpectedAlertOpenException which overwrites the
+     * real assertion failure, making the test appear to fail for a different reason.
+     */
+    protected function captureFailuresFor($browsers): void
+    {
+        $browsers->each(function ($browser) {
+            try {
+                $browser->driver->switchTo()->alert()->dismiss();
+            } catch (NoAlertOpenException $e) {
+                // No dialog open — nothing to dismiss.
+            }
+        });
+
+        parent::captureFailuresFor($browsers);
     }
 }

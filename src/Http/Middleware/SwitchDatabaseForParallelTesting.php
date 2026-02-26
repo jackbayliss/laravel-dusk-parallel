@@ -4,6 +4,7 @@ namespace JackBayliss\DuskParallel\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 
@@ -19,6 +20,8 @@ class SwitchDatabaseForParallelTesting
                 Config::set("database.connections.{$connection}.database", $testDatabase);
                 DB::purge($connection);
             }
+
+            Cache::forgetDriver(config('cache.default'));
         }
 
         return $next($request);
