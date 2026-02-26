@@ -39,9 +39,5 @@ class DuskParallelServiceProvider extends ServiceProvider
         $this->app->afterResolving(EncryptCookies::class, function (EncryptCookies $middleware) {
             $middleware->disableFor('dusk_db_token');
         });
-
-        // Prepend to the web group so the database is switched before StartSession
-        // (which may connect to the DB) and before any authenticated route handlers.
-        $this->app['router']->prependMiddlewareToGroup('web', SwitchDatabaseForParallelTesting::class);
     }
 }
