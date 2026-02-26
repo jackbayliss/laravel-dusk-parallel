@@ -12,6 +12,7 @@ class ParallelConnectionTest extends TestCase
         parent::setUp();
 
         unset($_ENV['TEST_TOKEN'], $_ENV['DUSK_DRIVER_URL']);
+        unset($_SERVER['TEST_TOKEN'], $_SERVER['DUSK_DRIVER_URL']);
 
         if (! $this->portListening(9515) || ! $this->portListening(9516)) {
             $this->markTestSkipped('ChromeDriver must be running on ports 9515 and 9516.');
@@ -23,6 +24,7 @@ class ParallelConnectionTest extends TestCase
         parent::tearDown();
 
         unset($_ENV['TEST_TOKEN'], $_ENV['DUSK_DRIVER_URL']);
+        unset($_SERVER['TEST_TOKEN'], $_SERVER['DUSK_DRIVER_URL']);
     }
 
     public function test_workers_open_independent_sessions_in_parallel(): void
