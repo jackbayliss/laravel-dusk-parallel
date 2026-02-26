@@ -12,6 +12,7 @@ class ParallelDriverTest extends TestCase
         parent::setUp();
 
         unset($_ENV['TEST_TOKEN'], $_ENV['DUSK_DRIVER_URL']);
+        unset($_SERVER['TEST_TOKEN'], $_SERVER['DUSK_DRIVER_URL']);
     }
 
     protected function tearDown(): void
@@ -19,6 +20,7 @@ class ParallelDriverTest extends TestCase
         parent::tearDown();
 
         unset($_ENV['TEST_TOKEN'], $_ENV['DUSK_DRIVER_URL']);
+        unset($_SERVER['TEST_TOKEN'], $_SERVER['DUSK_DRIVER_URL']);
     }
 
     public function test_not_running_in_parallel_by_default(): void
