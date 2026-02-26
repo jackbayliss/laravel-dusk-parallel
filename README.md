@@ -30,10 +30,12 @@ composer require --dev brianium/paratest
 
 ### 2. Start ChromeDriver instances
 
-You need one ChromeDriver instance per parallel process. By default the package uses ports starting from `9515`:
+You need one ChromeDriver instance per parallel process. By default, the package uses ports starting from `9515`. I recommend starting a few more instances than you think you need, as ParaTest's token assignment can be unpredictable depending on your environment:
 ```bash
 chromedriver --port=9515 &
 chromedriver --port=9516 &
+chromedriver --port=9517 &
+chromedriver --port=9518 &
 ```
 
 ### 3. Run your tests
@@ -101,13 +103,15 @@ abstract class DuskTestCase extends ParallelTestCase
   run: |
     chromedriver --port=9515 &
     chromedriver --port=9516 &
+    chromedriver --port=9517 &
+    chromedriver --port=9518 &
     sleep 2
 
 - name: Run Dusk tests
   run: php artisan dusk:parallel --processes=2
 ```
 
-Both ChromeDriver instances run on the same runner, so there is no additional CI cost compared to running Dusk sequentially.
+All ChromeDriver instances run on the same runner, so there is no additional CI cost compared to running Dusk sequentially.
 
 ## How it works
 

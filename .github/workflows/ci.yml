@@ -58,6 +58,7 @@ jobs:
           php -S localhost:8000 -t tests/Integration/Fixtures/public &
           chromedriver --port=9515 &
           chromedriver --port=9516 &
+          chromedriver --port=9517 &
           sleep 2
 
       - name: Run integration tests
