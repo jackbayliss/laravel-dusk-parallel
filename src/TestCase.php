@@ -23,21 +23,28 @@ abstract class TestCase extends DuskTestCase
     }
 
     /**
-     * Refresh the application and, on the first test of each paratest worker, fire the
-     * Laravel parallel-testing process callbacks (e.g. creating the per-worker database).
+     * Refresh the application and, when paratest is detected, wire up Laravel's parallel
+     * testing machinery that paratest doesn't trigger itself.
      *
-     * paratest sets TEST_TOKEN per-worker but never calls callSetUpProcessCallbacks(),
-     * so we do it here — once per process, after the app is booted so DB connections work.
-     * The built-in setUpTestCase callbacks then switch the default connection to the
-     * per-worker database, and any mirroring callbacks (e.g. for mysql-elevated) follow.
+     * paratest sets TEST_TOKEN per-worker but never sets LARAVEL_PARALLEL_TESTING nor calls
+     * callSetUpProcessCallbacks(). We do both here so the package works out of the box
+     * without requiring anything extra in phpunit.dusk.xml.
+     *
+     * LARAVEL_PARALLEL_TESTING must be set before callSetUpProcessCallbacks() and before
+     * callSetUpTestCaseCallbacks() (called by the parent immediately after this method),
+     * because both guard themselves with inParallel() which checks that flag.
      */
     protected function refreshApplication(): void
     {
         parent::refreshApplication();
 
-        if (ParallelDriver::runningInParallel() && ! static::$parallelProcessSetUp) {
-            ParallelTesting::callSetUpProcessCallbacks();
-            static::$parallelProcessSetUp = true;
+        if (ParallelDriver::runningInParallel()) {
+            $_SERVER['LARAVEL_PARALLEL_TESTING'] = '1';
+
+            if (! static::$parallelProcessSetUp) {
+                ParallelTesting::callSetUpProcessCallbacks();
+                static::$parallelProcessSetUp = true;
+            }
         }
     }
 
