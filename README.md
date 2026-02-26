@@ -114,6 +114,11 @@ abstract class DuskTestCase extends ParallelTestCase
 
 ParaTest splits your test suite across multiple worker processes. Each worker receives a `TEST_TOKEN` environment variable (`0`, `1`, `2`...) which the package uses to route that worker to its own ChromeDriver instance on a unique port. This means each worker gets a completely independent browser session with no shared state between processes.
 
+## Example project
+
+I've created https://github.com/jackbayliss/dusk-parallel-demo as a demo Laravel project with passing parallel tests if you'd much rather see an example with workflow passing.
+
+
 ## License
 
 MIT
