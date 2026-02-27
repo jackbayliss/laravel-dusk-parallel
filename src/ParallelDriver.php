@@ -4,14 +4,24 @@ namespace JackBayliss\DuskParallel;
 
 class ParallelDriver
 {
+    /**
+     * The default base port for ChromeDriver instances.
+     */
+    const DEFAULT_BASE_PORT = 9515;
+
     public static function runningInParallel(): bool
     {
         return isset($_SERVER['TEST_TOKEN']) || isset($_ENV['TEST_TOKEN']);
     }
 
+    public static function basePort(): int
+    {
+        return (int) ($_ENV['DUSK_DRIVER_BASE_PORT'] ?? env('DUSK_DRIVER_BASE_PORT') ?? static::DEFAULT_BASE_PORT);
+    }
+
     public static function parallelDriverPort(): int
     {
-        return 9515 + (int) ($_SERVER['TEST_TOKEN'] ?? $_ENV['TEST_TOKEN']);
+        return static::basePort() + (int) ($_SERVER['TEST_TOKEN'] ?? $_ENV['TEST_TOKEN']);
     }
 
     public static function hasExplicitPort(array $arguments): bool
@@ -47,6 +57,6 @@ class ParallelDriver
             $url = 'http://localhost:'.static::parallelDriverPort();
         }
 
-        return $url ?? 'http://localhost:9515';
+        return $url ?? 'http://localhost:'.static::basePort();
     }
 }

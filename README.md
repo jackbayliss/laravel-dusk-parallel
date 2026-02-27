@@ -1,43 +1,40 @@
 # Laravel Dusk Parallel
 
-Run your Laravel Dusk browser tests in parallel using [ParaTest](https://github.com/paratestphp/paratest).
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/jackbayliss/laravel-dusk-parallel.svg?style=flat-square)](https://packagist.org/packages/jackbayliss/laravel-dusk-parallel)
+[![PHP Version](https://img.shields.io/packagist/php-v/jackbayliss/laravel-dusk-parallel.svg?style=flat-square)](composer.json)
+[![License](https://img.shields.io/packagist/l/jackbayliss/laravel-dusk-parallel.svg?style=flat-square)](LICENSE)
 
-> **⚠️ This package is currently in beta.** It may contain bugs and the API is subject to change.
+Run your [Laravel Dusk](https://laravel.com/docs/dusk) browser tests in parallel — multiple ChromeDriver instances, one CI runner, faster feedback.
 
-## Why?
+> **This package is currently in beta.** It may not work, so give it a try and create an issue if something is broken - a failing test would be fantastic!
+---
 
-Laravel Dusk tests are slow as it requires a real browser, each test navigates to a page, and waits for it to render — even a modest suite of 20-30 tests can take several minutes to run sequentially.
+## Why parallel Dusk tests?
 
-The traditional solution is to split tests across multiple CI runners, but that means paying for additional parallel jobs. This package takes a different approach: run multiple ChromeDriver instances on the same runner, splitting your test suite across them. You get the speed of parallelism without the cost of extra CI infrastructure.
+Dusk tests are slow by nature: each test launches a real browser, navigates to a page, and waits for it to render. A suite of 20–30 tests can easily take several minutes when run sequentially.
+
+The common workaround is splitting tests across multiple CI runners — but that means paying for extra parallel jobs. This package takes a different approach: it runs multiple ChromeDriver instances on the **same** runner, splitting your test suite across them automatically. You get the speed of parallelism without the added infrastructure cost.
 
 ## Requirements
 
 - PHP 8.1+
 - Laravel 10+
-- Laravel Dusk 7+
+- Laravel Dusk 8+
+- [ParaTest](https://github.com/paratestphp/paratest) (`brianium/paratest`)
 
 ## Installation
+
 ```bash
 composer require --dev jackbayliss/laravel-dusk-parallel
+composer require --dev brianium/paratest
 ```
 
 ## Setup
 
-### 1. Install ParaTest
-```bash
-composer require --dev brianium/paratest
-```
-### 2. Add the middelware into your app
-```php
-    if (($_SERVER['APP_ENV'] ?? $_ENV['APP_ENV'] ?? null) === 'testing') {
-        $middleware->web(prepend: SwitchDatabaseForParallelTesting::class);
-    }
-```
+### 1. Start ChromeDriver instances
 
+You need one ChromeDriver instance per parallel process. By default the package assigns ports starting from `9515`. Start a few more than you intend to use, as ParaTest's token assignment can vary by environment:
 
-### 3. Start ChromeDriver instances
-
-You need one ChromeDriver instance per parallel process. By default, the package uses ports starting from `9515`. I recommend starting a few more instances than you think you need, as ParaTest's token assignment can be unpredictable depending on your environment:
 ```bash
 chromedriver --port=9515 &
 chromedriver --port=9516 &
@@ -45,12 +42,14 @@ chromedriver --port=9517 &
 chromedriver --port=9518 &
 ```
 
-### 4. Run your tests
+### 2. Run your tests
+
 ```bash
 php artisan dusk:parallel
 ```
 
-By default, this runs with 2 parallel processes. You can change this:
+By default this uses 2 parallel processes. Pass `--processes` to change it:
+
 ```bash
 php artisan dusk:parallel --processes=4
 ```
@@ -60,23 +59,27 @@ php artisan dusk:parallel --processes=4
 ### Changing the base port
 
 If port `9515` is already in use, set `DUSK_DRIVER_BASE_PORT` in your `.env`:
+
 ```env
 DUSK_DRIVER_BASE_PORT=9600
 ```
 
-Worker processes will then use ports `9600`, `9601`, etc. Remember to start ChromeDriver on those ports instead.
+Worker processes will use ports `9600`, `9601`, etc. Remember to start ChromeDriver on those ports.
 
-### Using a custom driver URL
+### Using a remote WebDriver
 
-If you're using a remote WebDriver such as Selenium Grid or BrowserStack, set `DUSK_DRIVER_URL` in your `.env` and the port logic will be bypassed entirely:
+For Selenium Grid, BrowserStack, or any other remote WebDriver, set `DUSK_DRIVER_URL` and the port logic is bypassed entirely:
+
 ```env
 DUSK_DRIVER_URL=http://selenium-grid:4444
 ```
 
 ### Customising Chrome options
 
-If you need to customise Chrome options, extend the package's `TestCase` in your `tests/DuskTestCase.php`:
+Extend the package's `TestCase` in your `tests/DuskTestCase.php` and override the `driver()` method:
+
 ```php
+use JackBayliss\DuskParallel\ParallelDriver;
 use JackBayliss\DuskParallel\TestCase as ParallelTestCase;
 
 abstract class DuskTestCase extends ParallelTestCase
@@ -100,11 +103,10 @@ abstract class DuskTestCase extends ParallelTestCase
 }
 ```
 
-> **Note:** Extending the package's `TestCase` is entirely optional. The package works with a standard Laravel Dusk setup out of the box.
+> Extending the package's `TestCase` is optional — it works with a standard Laravel Dusk setup out of the box.
 
-## CI Usage
+## CI — GitHub Actions
 
-### GitHub Actions
 ```yaml
 - name: Start ChromeDriver instances
   run: |
@@ -122,11 +124,24 @@ All ChromeDriver instances run on the same runner, so there is no additional CI 
 
 ## How it works
 
-ParaTest splits your test suite across multiple worker processes. Each worker receives a `TEST_TOKEN` environment variable (`0`, `1`, `2`...) which the package uses to route that worker to its own ChromeDriver instance on a unique port. This means each worker gets a completely independent browser session with no shared state between processes — all within a single CI job.
+ParaTest splits your test suite across multiple worker processes. Each worker receives a `TEST_TOKEN` environment variable (`0`, `1`, `2` …) which the package uses to:
+
+1. Route that worker's ChromeDriver to a unique port (`basePort + TEST_TOKEN`).
+2. Set a `dusk_db_token` cookie on the browser so every HTTP request is handled by the correct per-worker test database.
+
+Each worker gets a fully independent browser session and database — all within a single CI job.
+
+## Available commands
+
+| Script | Description |
+|---|---|
+| `composer test` | Run the test suite |
+| `composer lint` | Fix code style with Pint |
+| `composer analyse` | Static analysis with PHPStan |
 
 ## Example project
 
-See [dusk-parallel-demo](https://github.com/jackbayliss/dusk-parallel-demo) for a working Laravel app with passing parallel Dusk tests and a full GitHub Actions workflow.
+See [dusk-parallel-demo](https://github.com/jackbayliss/dusk-parallel-demo) for a working Laravel application with passing parallel Dusk tests and a complete GitHub Actions workflow.
 
 ## License
 

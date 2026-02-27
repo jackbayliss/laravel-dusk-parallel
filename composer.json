@@ -22,6 +22,7 @@
         "brianium/paratest": "^7.0|^8.0",
         "laravel/pint": "^1.0",
         "orchestra/testbench": "^8.0|^9.0|^10.0",
+        "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^10.5|^11.0"
     },
     "suggest": {
@@ -46,7 +47,8 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit",
-        "lint": "vendor/bin/pint --parallel --preset=laravel"
+        "lint": "vendor/bin/pint --parallel --preset=laravel",
+        "analyse": "vendor/bin/phpstan analyse --memory-limit=512M"
     },
     "config": {
         "sort-packages": true

@@ -19,10 +19,10 @@ class DuskParallelCommand extends DuskCommand
         $this->addOption('processes', null, InputOption::VALUE_REQUIRED, 'Number of parallel processes to use', 2);
         $this->addOption('stop-on-failure', null, InputOption::VALUE_NONE, 'Stop execution upon first test failure');
         $this->addOption('stop-on-error', null, InputOption::VALUE_NONE, 'Stop execution upon first test error');
-        $this->addOption('functional', 'f', InputOption::VALUE_NONE, 'Run each test method in a separate process (required for --stop-on-failure to work per-method)');
+        $this->addOption('functional', 'f', InputOption::VALUE_NONE, 'Run each test method in a separate process');
     }
 
-    protected function binary()
+    protected function binary(): array
     {
         $paratestPath = base_path('vendor/bin/paratest');
 
@@ -35,23 +35,21 @@ class DuskParallelCommand extends DuskCommand
         return [PHP_BINARY, $paratestPath];
     }
 
-    protected function phpunitArguments($options)
+    protected function phpunitArguments($options): array
     {
-        $args = parent::phpunitArguments($options);
-
-        $args = array_values(array_filter($args, function ($arg) {
-            return ! str_starts_with($arg, '--no-output')
+        $args = array_values(array_filter(
+            parent::phpunitArguments($options),
+            fn ($arg) => ! str_starts_with($arg, '--no-output')
                 && ! str_starts_with($arg, '--processes=')
                 && ! str_starts_with($arg, '--runner=')
                 && $arg !== '--stop-on-failure'
                 && $arg !== '--stop-on-error'
                 && $arg !== '--functional'
-                && $arg !== '-f';
-        }));
+                && $arg !== '-f',
+        ));
 
         $args[] = '--processes';
         $args[] = $this->option('processes');
-
         $args[] = '--runner';
         $args[] = 'WrapperRunner';
 
