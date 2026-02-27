@@ -5,7 +5,6 @@ namespace JackBayliss\DuskParallel;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Support\ServiceProvider;
 use JackBayliss\DuskParallel\Console\DuskParallelCommand;
-use JackBayliss\DuskParallel\Http\Middleware\SwitchDatabaseForParallelTesting;
 
 class DuskParallelServiceProvider extends ServiceProvider
 {
