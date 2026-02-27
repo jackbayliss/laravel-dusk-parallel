@@ -1,6 +1,7 @@
 # Laravel Dusk Parallel
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/jackbayliss/laravel-dusk-parallel.svg?style=flat-square)](https://packagist.org/packages/jackbayliss/laravel-dusk-parallel)
+[![Tests](https://img.shields.io/github/actions/workflow/status/jackbayliss/laravel-dusk-parallel/ci.yml?branch=main&label=tests&style=flat-square)](https://github.com/jackbayliss/laravel-dusk-parallel/actions/workflows/ci.yml)
 [![PHP Version](https://img.shields.io/packagist/php-v/jackbayliss/laravel-dusk-parallel.svg?style=flat-square)](composer.json)
 [![License](https://img.shields.io/packagist/l/jackbayliss/laravel-dusk-parallel.svg?style=flat-square)](LICENSE)
 

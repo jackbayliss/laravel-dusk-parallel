@@ -10,6 +10,8 @@ jobs:
   pint:
     runs-on: ubuntu-latest
     name: Pint
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
