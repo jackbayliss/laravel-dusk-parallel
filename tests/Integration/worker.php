@@ -1,26 +1,32 @@
 <?php
 
+use Facebook\WebDriver\Chrome\ChromeOptions;
+use Facebook\WebDriver\Remote\DesiredCapabilities;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\WebDriverBy;
+use JackBayliss\DuskParallel\ParallelDriver;
+
 require __DIR__.'/../../vendor/autoload.php';
 
 $token = (int) $argv[1];
 
 $_ENV['TEST_TOKEN'] = (string) $token;
 
-$options = (new Facebook\WebDriver\Chrome\ChromeOptions)
+$options = (new ChromeOptions)
     ->addArguments(['--headless=new', '--no-sandbox', '--disable-gpu']);
 
-$capabilities = Facebook\WebDriver\Remote\DesiredCapabilities::chrome()
-    ->setCapability(Facebook\WebDriver\Chrome\ChromeOptions::CAPABILITY, $options);
+$capabilities = DesiredCapabilities::chrome()
+    ->setCapability(ChromeOptions::CAPABILITY, $options);
 
-$driver = Facebook\WebDriver\Remote\RemoteWebDriver::create(
-    JackBayliss\DuskParallel\ParallelDriver::resolveDriverUrl(),
+$driver = RemoteWebDriver::create(
+    ParallelDriver::resolveDriverUrl(),
     $capabilities
 );
 
 $driver->get('about:blank');
 $driver->executeScript('document.body.innerHTML = "<h1 id=\'w\'>Worker '.$token.'</h1>"');
 
-$text = $driver->findElement(Facebook\WebDriver\WebDriverBy::id('w'))->getText();
+$text = $driver->findElement(WebDriverBy::id('w'))->getText();
 
 $driver->quit();
 
